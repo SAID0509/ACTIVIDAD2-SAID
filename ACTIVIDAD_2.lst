@@ -1,0 +1,86 @@
+---------------------------------------------
+OSHONSOFT Z80 ASSEMBLER LISTING
+Line   Addr Opcode      Label   Instruction
+---------------------------------------------
+0001   0000             ;Autor: Said De la Vega
+0002   0000             ;actividad 2
+0003   0000             
+0004   0000              .org 0000h ;Line modified by ASM preprocessor (.ORG correction): .org 0000h
+0005   0000             
+0006   0000             ;Declaramos valores de B y C
+0007   0000             
+0008   0000 06 0F       	LD B, 15
+0009   0002 0E 1A       	LD C, 26
+0010   0004             
+0011   0004             ;Convertimos C a BCD
+0012   0004             
+0013   0004 79          	LD A, C			; Copia el valor de C en A
+0014   0005 26 00       	LD H, 0			; Inicializa H (contador de decenas) a 0
+0015   0007 2E 0A       	LD L, 10		; L contiene 10, que se usa para comparar el valor en A
+0016   0009             
+0017   0009             CICLO_BCD_c:
+0018   0009 BD          	CP L			; Compara A con 10
+0019   000A 38 04       	JR C, GUARDAR_DE	; Si A < 10, dirige a GUARDAR_DE:
+0020   000C 95          	SUB L			; Resta 10 de A
+0021   000D 24          	INC H 			; Incrementa H (contador de decenas)
+0022   000E 18 F9       	JR CICLO_BCD_C		; Repite el bucle
+0023   0010             
+0024   0010             GUARDAR_DE:
+0025   0010 54          	LD D, H			; Guarda las decenas en D
+0026   0011 5F          	LD E, A			; Guarda las unidades en E
+0027   0012             
+0028   0012             ; Ahora convertimos B a BCD
+0029   0012             
+0030   0012 78          	LD A, B			; Copia el valor de B en A
+0031   0013 26 00       	LD H, 0			; Inicializa H (contador de decenas) a 0
+0032   0015             
+0033   0015             CICLO_BCD_B:
+0034   0015 BD          	CP L			; Comparar A con 10
+0035   0016 38 04       	JR C, GUARDAR_BC	; Si A < 10, dirige a GUARDAR_BC:
+0036   0018 95          	SUB L			; Resta 10 de A
+0037   0019 24          	INC H			; Incrementa H (contador de decenas)
+0038   001A 18 F9       	JR CICLO_BCD_B		; Repite el bucle
+0039   001C             
+0040   001C             GUARDAR_BC:
+0041   001C 44          	LD B, H           ; Guarda las decenas en B
+0042   001D 4F          	LD C, A           ; Guarda las unidades en C
+0043   001E             
+0044   001E             ;Sumamos las unidades
+0045   001E             
+0046   001E 79          	LD A, C
+0047   001F 83          	ADD A, E
+0048   0020             
+0049   0020             ;el dato que se guardo en A lo convertimos a decimal
+0050   0020             
+0051   0020 26 00       	LD H, 0			; Inicializa el (CARRY) a 0
+0052   0022 1E 0A       	LD E, 10		; cargamos 10 en L, que se usa para comparar el valor en A
+0053   0024             
+0054   0024             CICLO_UNIDAD_CE:
+0055   0024 BB          	CP E			; Compara A con 10
+0056   0025 38 04       	JR C, GUARDAR_UNIDAD_L		; Si A < 10, dirige a GUARDAR_UNIDAD_L:
+0057   0027 93          	SUB E			; Resta 10 de A
+0058   0028 24          	INC H 			; Incrementa H (CARRY) de decenas
+0059   0029 18 F9       	JR CICLO_UNIDAD_CE		; Repite el bucle
+0060   002B             
+0061   002B             GUARDAR_UNIDAD_L:
+0062   002B 6F          	LD L, A			; Guarda las unidades en L
+0063   002C             
+0064   002C             
+0065   002C             ;Sumamos las decenas
+0066   002C             
+0067   002C 78          	LD A, B
+0068   002D 82          	ADD A, D
+0069   002E 84          	ADD A, H		;Aqui suma el Carry
+0070   002F 06 00       	LD B, 0
+0071   0031             
+0072   0031             CICLO_DECENAS_BD:
+0073   0031 BB          	CP E			; Compara A con 10
+0074   0032 38 04       	JR C, GUARDAR_H_Y_A	; Si A < 10, dirige a GUARDAR_H_Y_A:
+0075   0034 93          	SUB E			; Resta 10 de A
+0076   0035 04          	INC B			; Incrementa B (CARRY) de centenas
+0077   0036 18 F9       	JR CICLO_DECENAS_BD	; Repite el bucle
+0078   0038             
+0079   0038             GUARDAR_H_Y_A:
+0080   0038 67          	LD H, A			; Guarda las decenas en H
+0081   0039 78          	LD A, B			; Guarda las centenas en A
+Number of errors = 0
